@@ -12,17 +12,22 @@ const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// 🔥 Get cart from sessionStorage
+// ✅ Get cart from sessionStorage (SAFE)
 function getCart() {
-  return JSON.parse(sessionStorage.getItem("cart")) || [];
+  const data = sessionStorage.getItem("cart");
+  try {
+    return data ? JSON.parse(data) : [];
+  } catch (e) {
+    return [];
+  }
 }
 
-// 🔥 Save cart to sessionStorage
+// ✅ Save cart
 function saveCart(cart) {
   sessionStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// ✅ Render product list
+// ✅ Render products
 function renderProducts() {
   productList.innerHTML = "";
 
@@ -40,7 +45,7 @@ function renderProducts() {
   });
 }
 
-// ✅ Render cart list
+// ✅ Render cart
 function renderCart() {
   const cart = getCart();
 
@@ -53,19 +58,19 @@ function renderCart() {
   });
 }
 
-// ✅ Add item to cart
+// ✅ Add to cart (APPEND, don't overwrite)
 function addToCart(productId) {
-  const cart = getCart();
+  const cart = getCart(); // always latest
 
   const product = products.find((p) => p.id === productId);
 
-  cart.push(product);
+  const updatedCart = [...cart, product]; // 🔥 important
 
-  saveCart(cart);
+  saveCart(updatedCart);
   renderCart();
 }
 
-// ❌ Not required but kept (optional)
+// ❌ Optional (not required)
 function removeFromCart(productId) {
   let cart = getCart();
   cart = cart.filter((item) => item.id !== productId);
@@ -75,11 +80,11 @@ function removeFromCart(productId) {
 
 // ✅ Clear cart
 function clearCart() {
-  sessionStorage.removeItem("cart");
+  sessionStorage.setItem("cart", JSON.stringify([])); // 🔥 important (NOT removeItem)
   renderCart();
 }
 
-// 🔥 Event delegation for Add to Cart
+// ✅ Event delegation
 productList.addEventListener("click", (e) => {
   if (e.target.classList.contains("add-to-cart-btn")) {
     const id = parseInt(e.target.dataset.id);
@@ -87,7 +92,7 @@ productList.addEventListener("click", (e) => {
   }
 });
 
-// 🔥 Clear cart button
+// ✅ Clear button
 clearCartBtn.addEventListener("click", clearCart);
 
 // Initial render
