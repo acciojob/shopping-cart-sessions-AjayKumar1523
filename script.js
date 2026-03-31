@@ -7,23 +7,27 @@ const products = [
   { id: 5, name: "Product 5", price: 50 },
 ];
 
+// 🔥 CRITICAL FIX
+if (!sessionStorage.getItem("cart")) {
+  sessionStorage.setItem("cart", JSON.stringify([]));
+}
+
 // DOM elements
 const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// ✅ Get cart (DO NOT RESET)
+// Get cart
 function getCart() {
-  const data = sessionStorage.getItem("cart");
-  return data ? JSON.parse(data) : [];
+  return JSON.parse(sessionStorage.getItem("cart"));
 }
 
-// ✅ Save cart
+// Save cart
 function saveCart(cart) {
   sessionStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// ✅ Render products
+// Render products
 function renderProducts() {
   productList.innerHTML = "";
 
@@ -41,7 +45,7 @@ function renderProducts() {
   });
 }
 
-// ✅ Render cart
+// Render cart
 function renderCart() {
   const cart = getCart();
 
@@ -54,25 +58,25 @@ function renderCart() {
   });
 }
 
-// ✅ Add to cart (APPEND)
+// Add to cart
 function addToCart(productId) {
   const cart = getCart();
 
   const product = products.find((p) => p.id === productId);
 
-  cart.push(product); // 🔥 important (append)
+  cart.push(product); // append
 
   saveCart(cart);
   renderCart();
 }
 
-// ✅ Clear cart
+// Clear cart
 function clearCart() {
   sessionStorage.setItem("cart", JSON.stringify([]));
   renderCart();
 }
 
-// ✅ Event delegation
+// Events
 productList.addEventListener("click", (e) => {
   if (e.target.classList.contains("add-to-cart-btn")) {
     const id = parseInt(e.target.dataset.id);
@@ -80,9 +84,8 @@ productList.addEventListener("click", (e) => {
   }
 });
 
-// ✅ Clear button
 clearCartBtn.addEventListener("click", clearCart);
 
-// 🚫 DO NOT TOUCH sessionStorage here
+// Initial render
 renderProducts();
 renderCart();
