@@ -12,14 +12,10 @@ const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// ✅ Get cart from sessionStorage (SAFE)
+// ✅ Get cart (DO NOT RESET)
 function getCart() {
   const data = sessionStorage.getItem("cart");
-  try {
-    return data ? JSON.parse(data) : [];
-  } catch (e) {
-    return [];
-  }
+  return data ? JSON.parse(data) : [];
 }
 
 // ✅ Save cart
@@ -58,29 +54,21 @@ function renderCart() {
   });
 }
 
-// ✅ Add to cart (APPEND, don't overwrite)
+// ✅ Add to cart (APPEND)
 function addToCart(productId) {
-  const cart = getCart(); // always latest
+  const cart = getCart();
 
   const product = products.find((p) => p.id === productId);
 
-  const updatedCart = [...cart, product]; // 🔥 important
+  cart.push(product); // 🔥 important (append)
 
-  saveCart(updatedCart);
-  renderCart();
-}
-
-// ❌ Optional (not required)
-function removeFromCart(productId) {
-  let cart = getCart();
-  cart = cart.filter((item) => item.id !== productId);
   saveCart(cart);
   renderCart();
 }
 
 // ✅ Clear cart
 function clearCart() {
-  sessionStorage.setItem("cart", JSON.stringify([])); // 🔥 important (NOT removeItem)
+  sessionStorage.setItem("cart", JSON.stringify([]));
   renderCart();
 }
 
@@ -95,6 +83,6 @@ productList.addEventListener("click", (e) => {
 // ✅ Clear button
 clearCartBtn.addEventListener("click", clearCart);
 
-// Initial render
+// 🚫 DO NOT TOUCH sessionStorage here
 renderProducts();
 renderCart();
